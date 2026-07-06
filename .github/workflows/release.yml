@@ -11,8 +11,18 @@ permissions:
 
 jobs:
   build:
-    name: Build Compiler Binary
-    runs-on: ubuntu-latest
+    name: Build Compiler Binary for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: cluster-v0.1-linux
+          - os: windows-latest
+            artifact_name: cluster-v0.1-windows.exe
+          - os: macos-latest
+            artifact_name: cluster-v0.1-macos
 
     steps:
       - name: Checkout Release Repository
@@ -36,15 +46,38 @@ jobs:
           pip install pyinstaller lark llvmlite
 
       - name: Build Standalone Compiler Binary
+        shell: bash
         run: |
           cd cluster-lang-source
-          pyinstaller --onefile --name cluster-v0.1 run.py
-          mv dist/cluster-v0.1 ../cluster-v0.1
+          pyinstaller --onefile --name ${{ matrix.artifact_name }} --collect-binaries llvmlite run.py
+          mv dist/${{ matrix.artifact_name }} ../${{ matrix.artifact_name }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_name }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Consolidate Artifacts
+        run: |
+          mkdir release-files
+          find artifacts -type f -exec cp {} release-files/ \;
+          ls -R release-files
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: cluster-v0.1
+          files: release-files/*
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'v0.1.0' }}
           draft: false
           prerelease: false
