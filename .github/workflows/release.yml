@@ -83,12 +83,18 @@ jobs:
             --hidden-import lark \
             run.py
           mv dist/${{ env.BINARY_NAME }} ../${{ env.BINARY_NAME }}
+          
+          # Create a static version-agnostic copy
+          STATIC_NAME="cluster-${{ matrix.platform }}${{ matrix.ext }}"
+          cp ../${{ env.BINARY_NAME }} ../${{ STATIC_NAME }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.BINARY_NAME }}
-          path: ${{ env.BINARY_NAME }}
+          name: artifacts-${{ matrix.platform }}
+          path: |
+            ${{ env.BINARY_NAME }}
+            cluster-${{ matrix.platform }}${{ matrix.ext }}
 
   release:
     name: Create GitHub Release
