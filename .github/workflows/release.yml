@@ -56,7 +56,7 @@ jobs:
       - name: Set Version and Binary Name
         shell: bash
         run: |
-          VERSION="${{ github.event.inputs.version }}"
+          VERSION="${{ inputs.version }}"
           if [ -z "$VERSION" ]; then
             if [ "${{ github.ref_type }}" = "tag" ]; then
               VERSION="${{ github.ref_name }}"
@@ -108,7 +108,7 @@ jobs:
 
       - name: Set Version Tag
         run: |
-          VERSION="${{ github.event.inputs.version }}"
+          VERSION="${{ inputs.version }}"
           if [ -z "$VERSION" ]; then
             if [ "${{ github.ref_type }}" = "tag" ]; then
               VERSION="${{ github.ref_name }}"
