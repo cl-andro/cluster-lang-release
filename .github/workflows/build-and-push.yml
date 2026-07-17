@@ -1,0 +1,51 @@
+name: Build and Push Docker Action Image
+
+on:
+  push:
+    branches: ["main"]
+  release:
+    types: [published]
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Release Repo
+        uses: actions/checkout@v4
+
+      - name: Download latest release binary
+        run: |
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          if [ -z "$TAG_NAME" ]; then
+            gh release download --repo ${{ github.repository }} --pattern 'cluster-v0.1-linux' --dir .
+          else
+            gh release download "$TAG_NAME" --repo ${{ github.repository }} --pattern 'cluster-v0.1-linux' --dir .
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Downcase Repository Owner for Docker tag
+        id: prep
+        run: |
+          echo "owner=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ steps.prep.outputs.owner }}/cluster-lang-release:latest
+            ghcr.io/${{ steps.prep.outputs.owner }}/cluster-lang-release:${{ github.sha }}

@@ -1,0 +1,6 @@
+name: 'Cluster-Jekyll Site Builder'
+description: 'Builds your Jekyll website in milliseconds using the compiled C++ Cluster compiler.'
+author: 'cl-andro'
+runs:
+  using: 'docker'
+  image: 'docker://ghcr.io/cl-andro/cluster-lang-release:latest'
