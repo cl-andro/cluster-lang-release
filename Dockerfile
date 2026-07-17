@@ -18,8 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip3 install lark
 
 # Copy the compiled cluster binary into the container
-# We assume the binary is placed in the build context as 'cluster'
-COPY cluster-v0.1-linux /usr/local/bin/cluster
+COPY cluster-linux /usr/local/bin/cluster
 RUN chmod +x /usr/local/bin/cluster
 
 # Copy the entrypoint script

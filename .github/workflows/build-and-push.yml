@@ -21,10 +21,11 @@ jobs:
         run: |
           TAG_NAME="${{ github.event.release.tag_name }}"
           if [ -z "$TAG_NAME" ]; then
-            gh release download --repo ${{ github.repository }} --pattern 'cluster-v0.1-linux' --dir .
+            gh release download --repo ${{ github.repository }} --pattern 'cluster-*-linux' --dir .
           else
-            gh release download "$TAG_NAME" --repo ${{ github.repository }} --pattern 'cluster-v0.1-linux' --dir .
+            gh release download "$TAG_NAME" --repo ${{ github.repository }} --pattern 'cluster-*-linux' --dir .
           fi
+          mv cluster-*-linux cluster-linux
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
