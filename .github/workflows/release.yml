@@ -56,7 +56,14 @@ jobs:
       - name: Set Version and Binary Name
         shell: bash
         run: |
-          VERSION="${{ github.event.inputs.version || (github.ref_type == 'tag' && github.ref_name || 'v0.1.0') }}"
+          VERSION="${{ github.event.inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            if [ "${{ github.ref_type }}" = "tag" ]; then
+              VERSION="${{ github.ref_name }}"
+            else
+              VERSION="v0.1.0"
+            fi
+          fi
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           echo "BINARY_NAME=cluster-${VERSION}-${{ matrix.platform }}${{ matrix.ext }}" >> $GITHUB_ENV
 
@@ -99,11 +106,23 @@ jobs:
           find artifacts -type f -exec cp {} release-files/ \;
           ls -R release-files
 
+      - name: Set Version Tag
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            if [ "${{ github.ref_type }}" = "tag" ]; then
+              VERSION="${{ github.ref_name }}"
+            else
+              VERSION="v0.1.0"
+            fi
+          fi
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: release-files/*
-          tag_name: ${{ github.event.inputs.version || (github.ref_type == 'tag' && github.ref_name || 'v0.1.0') }}
+          tag_name: ${{ env.VERSION }}
           draft: false
           prerelease: false
         env:
