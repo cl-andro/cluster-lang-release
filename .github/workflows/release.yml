@@ -49,8 +49,19 @@ jobs:
         shell: bash
         run: |
           cd cluster-lang-source
-          pyinstaller --onefile --name ${{ matrix.artifact_name }} --collect-binaries llvmlite run.py
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            SEP=";"
+          else
+            SEP=":"
+          fi
+          pyinstaller --onefile --name ${{ matrix.artifact_name }} \
+            --add-data "compiler${SEP}compiler" \
+            --add-data "cluster_backend${SEP}cluster_backend" \
+            --collect-all llvmlite \
+            --hidden-import lark \
+            run.py
           mv dist/${{ matrix.artifact_name }} ../${{ matrix.artifact_name }}
+
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
