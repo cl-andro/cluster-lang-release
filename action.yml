@@ -16,5 +16,6 @@ runs:
       run: |
         docker run --rm \
           -v "${{ github.workspace }}:/github/workspace" \
+          -e GITHUB_WORKSPACE=/github/workspace \
           -w /github/workspace \
           ghcr.io/cl-andro/cluster-lang-release:latest
