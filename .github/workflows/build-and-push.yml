@@ -22,14 +22,15 @@ jobs:
         run: |
           TAG_NAME="${{ github.event.release.tag_name }}"
           if [ -z "$TAG_NAME" ]; then
-            gh release download --repo ${{ github.repository }} --pattern 'cluster-*-linux' --dir .
+            gh release download --repo ${{ github.repository }} --pattern 'cluster-*-linux' --dir . --clobber
           else
-            gh release download "$TAG_NAME" --repo ${{ github.repository }} --pattern 'cluster-*-linux' --dir .
+            gh release download "$TAG_NAME" --repo ${{ github.repository }} --pattern 'cluster-*-linux' --dir . --clobber
           fi
-          LINUX_BIN=$(ls cluster-*-linux | head -n 1)
-          if [ "$LINUX_BIN" != "cluster-linux" ]; then
-            cp "$LINUX_BIN" cluster-linux
+          LINUX_BIN=$(ls cluster-v*-linux 2>/dev/null | head -n 1)
+          if [ -z "$LINUX_BIN" ]; then
+            LINUX_BIN=$(ls cluster-linux 2>/dev/null | head -n 1)
           fi
+          cp "$LINUX_BIN" cluster-linux
           chmod +x cluster-linux
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
