@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Lark parser (needed by the compiler's Python runtime components)
-RUN pip3 install lark
+RUN pip3 install --break-system-packages lark
 
 # Copy the compiled cluster binary into the container
 COPY cluster-linux /usr/local/bin/cluster
