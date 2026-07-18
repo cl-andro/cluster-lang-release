@@ -7,6 +7,9 @@ echo "=================================================="
 echo "🚀 Running Cluster-Jekyll Site Compilation..."
 echo "=================================================="
 
+# Ensure destination folder exists
+mkdir -p _site
+
 # Run the build
 cluster --jekyll build
 
