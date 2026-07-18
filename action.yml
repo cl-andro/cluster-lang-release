@@ -14,8 +14,10 @@ runs:
     - name: Run Cluster-Jekyll Container
       shell: bash
       run: |
-        docker run --rm \
+        docker run --pull=always --rm \
           -v "${{ github.workspace }}:/github/workspace" \
           -e GITHUB_WORKSPACE=/github/workspace \
           -w /github/workspace \
           ghcr.io/cl-andro/cluster-lang-release:latest
+        echo "=== Workspace contents after build ==="
+        ls -la
