@@ -21,3 +21,5 @@ runs:
           ghcr.io/cl-andro/cluster-lang-release:latest
         echo "=== Workspace contents after build ==="
         ls -la
+        echo "=== _site contents after build ==="
+        ls -la _site || true
