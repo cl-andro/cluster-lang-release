@@ -1,5 +1,5 @@
 # Use a lightweight Ubuntu image as the base
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Prevent interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
