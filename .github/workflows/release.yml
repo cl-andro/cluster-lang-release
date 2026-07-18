@@ -83,10 +83,11 @@ jobs:
             --hidden-import lark \
             run.py
           mv dist/${{ env.BINARY_NAME }} ../${{ env.BINARY_NAME }}
+          cd ..
           
           # Create a static version-agnostic copy
           STATIC_NAME="cluster-${{ matrix.platform }}${{ matrix.ext }}"
-          cp ../${{ env.BINARY_NAME }} ../${{ STATIC_NAME }}
+          cp ${{ env.BINARY_NAME }} ${STATIC_NAME}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4

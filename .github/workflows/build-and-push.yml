@@ -26,7 +26,11 @@ jobs:
           else
             gh release download "$TAG_NAME" --repo ${{ github.repository }} --pattern 'cluster-*-linux' --dir .
           fi
-          mv cluster-*-linux cluster-linux
+          LINUX_BIN=$(ls cluster-*-linux | head -n 1)
+          if [ "$LINUX_BIN" != "cluster-linux" ]; then
+            cp "$LINUX_BIN" cluster-linux
+          fi
+          chmod +x cluster-linux
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

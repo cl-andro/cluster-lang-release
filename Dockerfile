@@ -18,9 +18,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Lark parser (needed by the compiler's Python runtime components)
 RUN pip3 install lark
 
-# Download the latest compiled cluster binary from GitHub releases
-RUN curl -L -o /usr/local/bin/cluster https://github.com/cl-andro/cluster-lang-release/releases/latest/download/cluster-linux \
-    && chmod +x /usr/local/bin/cluster
+# Copy the compiled cluster binary into the container
+COPY cluster-linux /usr/local/bin/cluster
+RUN chmod +x /usr/local/bin/cluster
 
 # Copy the entrypoint script
 COPY entrypoint.sh /entrypoint.sh
